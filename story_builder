@@ -1,0 +1,32 @@
+# story_builder.py
+
+import pyttsx3
+from moviepy.editor import ImageClip, concatenate_videoclips, AudioFileClip
+from PIL import Image
+import os
+
+def generate_images_from_text(story_text):
+    # Simulate image generation (replace with DALL-E API in production)
+    images = []
+    for i, line in enumerate(story_text.split('.')):
+        img = Image.new('RGB', (800, 600), color=(73, 109, 137))
+        img.save(f"story_image_{i}.png")
+        images.append(f"story_image_{i}.png")
+    return images
+
+def generate_audio_from_text(story_text, audio_file):
+    engine = pyttsx3.init()
+    engine.save_to_file(story_text, audio_file)
+    engine.runAndWait()
+
+def create_story_video(images, audio_file, output_file):
+    clips = [ImageClip(img).set_duration(3) for img in images]
+    video = concatenate_videoclips(clips, method="compose")
+    audio = AudioFileClip(audio_file)
+    video = video.set_audio(audio)
+    video.write_videofile(output_file, fps=24)
+
+story = "Once upon a time, there was a beautiful garden. It had colorful flowers and chirping birds."
+images = generate_images_from_text(story)
+generate_audio_from_text(story, "story_audio.mp3")
+create_story_video(images, "story_audio.mp3", "story_video.mp4")
